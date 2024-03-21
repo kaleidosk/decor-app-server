@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require('../models/User.model');
 const mongoose = require('mongoose');
 const fileUploader = require('../config/cloudinary.config');
+const Project = require ('../models/Project.model')
 
 // GET /user/:userId - Profile page
 router.get('/:userId', (req, res, next) => {
@@ -14,16 +15,25 @@ router.get('/:userId', (req, res, next) => {
   }
 
   User.findById(userId)
-    .then((user) => {
+    .then(user => {
       if (!user) {
         res.status(404).json({ message: "User not found" });
         return;
       }
-      res.status(200).json(user);
+      
+      // Obtener los proyectos asociados al usuario
+      Project.find({ userId })
+        .then(projects => {
+          res.status(200).json({ user, projects });
+        })
+        .catch(error => {
+          console.error("Error fetching user projects:", error);
+          res.status(500).json({ message: "Error fetching user projects" });
+        });
     })
-    .catch((err) => {
-      console.log("Error while retrieving the user", err);
-      res.status(500).json({ message: "Error while retrieving the user" });
+    .catch(error => {
+      console.error("Error fetching user profile:", error);
+      res.status(500).json({ message: "Error fetching user profile" });
     });
 });
 
