@@ -10,6 +10,7 @@ router.post('/', isAuthenticated, fileUploader.single('picture'), (req, res, nex
   console.log("req.file", req.file);
   // Obtener los datos del formulario
   const { description } = req.body;
+  const {title} = req.body;
   const pictureUrl = req.file ? req.file.path : null; // Obtener la URL de la imagen en Cloudinary
 
   // Verificar si la descripción está presente
@@ -20,6 +21,7 @@ router.post('/', isAuthenticated, fileUploader.single('picture'), (req, res, nex
   // Crear un nuevo proyecto con los datos recibidos
   const newProject = new Project({
     userId: req.payload._id, // Asignar el ID del usuario del token
+    title: title,
     description: description,
     picture: pictureUrl // Asignar la URL de la imagen en Cloudinary
   });
@@ -36,7 +38,7 @@ router.post('/', isAuthenticated, fileUploader.single('picture'), (req, res, nex
 });
 
 // GET /api/projects/:id - Get a project by ID
-router.get('/:id', isAuthenticated, (req, res, next) => {
+router.get('/:id',(req, res, next) => {
   // Obtener el ID del proyecto
   const projectId = req.params.id;
   console.log('projectId',projectId)
@@ -49,7 +51,7 @@ router.get('/:id', isAuthenticated, (req, res, next) => {
       }
       // Devolver los datos del proyecto
       res.json({
-        id: project._id,
+        projectId: project._id,
         title: project.title,
         description: project.description,
         picture: project.picture
@@ -60,6 +62,8 @@ router.get('/:id', isAuthenticated, (req, res, next) => {
       res.status(500).json({ message: "Error while retrieving the project" });
     });
 });
+
+
 
 // PUT /api/projects/:id - Update a project
 router.put('/:id', isAuthenticated, fileUploader.single('picture'), (req, res, next) => {
@@ -110,6 +114,20 @@ router.delete('/:id', isAuthenticated, (req, res, next) => {
       res.status(500).json({ message: "Error while deleting the project" });
     });
 });
+
+// GET /api/projects - Get all projects
+router.get('/', (req, res, next) => {
+  // Buscar todos los proyectos en la base de datos
+  Project.find()
+    .then((projects) => {
+      res.json(projects); // Devolver la lista de proyectos en formato JSON
+    })
+    .catch((err) => {
+      console.log("Error while retrieving projects", err);
+      res.status(500).json({ message: "Error while retrieving projects" });
+    });
+});
+
 
 module.exports = router;
 
