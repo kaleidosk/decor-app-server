@@ -28,6 +28,9 @@ app.use("/api/user", userRoutes); // Cambiar a "/api/user"
 const projectsRoutes = require ("./routes/projects.routes")
 app.use('/api/projects', projectsRoutes);
 
+const quotationsRoutes = require ("./routes/quotations.routes")
+app.use('/api/quotations', quotationsRoutes);
+
 
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require("./error-handling")(app);
