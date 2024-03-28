@@ -4,13 +4,11 @@ const Quotation = require('../models/Quotation.model');
 const Project = require('../models/Project.model');
 const {isAuthenticated} = require('../middleware/jwt.middleware')
 
-router.post('/projects/:id/quotations', isAuthenticated, (req, res) => {
-  const { clientId, professionalId, content, price } = req.body;
-  console.log(req.body)
-  const projectId = req.params.id;
+router.post('/projects/:projectId/quotations', isAuthenticated, (req, res) => {
+  const {content, price } = req.body;
+  const projectId = req.params.projectId;
 
   const newQuotation = new Quotation({
-    clientId,
     professionalId,
     projectId,
     content,
